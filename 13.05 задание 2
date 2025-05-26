@@ -1,0 +1,132 @@
+package com.example.geoquiz;
+
+public class Question {
+    private final int textResId;
+    private final boolean answerTrue;
+
+    public Question(int textResId, boolean answerTrue) {
+        this.textResId = textResId;
+        this.answerTrue = answerTrue;
+    }
+
+    public int getTextResId() {
+        return textResId;
+    }
+
+    public boolean isAnswerTrue() {
+        return answerTrue;
+    }
+}
+
+
+<string name="question_1">Is Canberra the capital of Australia?</string>
+<string name="question_2">Is Paris the capital of Italy?</string>
+<string name="question_3">Is Mount Everest the tallest mountain?</string>
+<string name="question_4">Is the Pacific Ocean the largest ocean?</string>
+<string name="question_5">Is the Nile the longest river?</string>
+<string name="question_6">Is Tokyo the capital of Japan?</string>
+
+
+
+private Question[] questionBank = new Question[] {
+    new Question(R.string.question_1, true),
+    new Question(R.string.question_2, false),
+    new Question(R.string.question_3, true),
+    new Question(R.string.question_4, true),
+    new Question(R.string.question_5, true),
+    new Question(R.string.question_6, true)
+};
+
+
+private int mCurrentIndex = 0;
+
+private void updateQuestion() {
+    int question = questionBank[mCurrentIndex].getTextResId();
+    mQuestionTextView.setText(question);
+}
+
+// В onCreate:
+mNextButton.setOnClickListener(v -> {
+    mCurrentIndex = (mCurrentIndex + 1) % questionBank.length;
+    updateQuestion();
+});
+
+
+
+res/drawable-hdpi/arrow_right.png
+res/drawable-xhdpi/arrow_right.png
+res/drawable-xxhdpi/arrow_right.png
+
+
+
+android:drawableRight="@drawable/arrow_right"
+android:drawablePadding="4dp"
+ 2 задание
+
+ @Override
+protected void onStart() {
+    super.onStart();
+    Log.d(TAG, "onStart called");
+}
+
+@Override
+protected void onResume() {
+    super.onResume();
+    Log.d(TAG, "onResume called");
+}
+
+@Override
+protected void onPause() {
+    super.onPause();
+    Log.d(TAG, "onPause called");
+}
+
+@Override
+protected void onStop() {
+    super.onStop();
+    Log.d(TAG, "onStop called");
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    Log.d(TAG, "onDestroy called");
+}
+
+
+private static final String KEY_INDEX = "index";
+
+
+@Override
+protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putInt(KEY_INDEX, mCurrentIndex);
+}
+
+
+
+if (savedInstanceState != null) {
+    mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+}
+updateQuestion();
+
+
+
+private int mCorrectAnswers = 0;
+
+private void checkAnswer(boolean userPressedTrue) {
+    boolean answerIsTrue = questionBank[mCurrentIndex].isAnswerTrue();
+
+    if (userPressedTrue == answerIsTrue) {
+        mCorrectAnswers++;
+        Toast.makeText(this, R.string.correct_toast, Toast.LENGTH_SHORT).show();
+    } else {
+        Toast.makeText(this, R.string.incorrect_toast, Toast.LENGTH_SHORT).show();
+    }
+
+    if (mCurrentIndex == questionBank.length - 1) {
+        int scorePercent = (mCorrectAnswers * 100) / questionBank.length;
+        Toast.makeText(this, "Score: " + scorePercent + "%", Toast.LENGTH_LONG).show();
+    }
+}
+
