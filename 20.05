@@ -1,0 +1,150 @@
+git checkout -b lesson-3
+
+
+
+data class Question(
+    val textResId: Int,
+    val answers: List<String>,
+    val correctIndex: Int
+)
+
+object QuestionRepository {
+    val questions = listOf(
+        Question(R.string.q1_text, listOf("Option 1", "Option 2", "Option 3", "Option 4"), 2),
+        // Добавь минимум 10 вопросов по темам Android архитектуры и Kotlin
+    )
+}
+
+
+
+class QuizViewModel : ViewModel() {
+
+    private val _currentIndex = MutableLiveData(0)
+    val currentIndex: LiveData<Int> = _currentIndex
+
+    private val _score = MutableLiveData(0)
+    val score: LiveData<Int> = _score
+
+    private val _answered = MutableLiveData(false)
+    val answered: LiveData<Boolean> = _answered
+
+    private var selectedAnswerIndex: Int? = null
+
+    val questions = QuestionRepository.questions
+
+    fun checkAnswer(index: Int): Boolean {
+        if (_answered.value == true) return false
+
+        selectedAnswerIndex = index
+        _answered.value = true
+
+        val isCorrect = index == questions[_currentIndex.value!!].correctIndex
+        if (isCorrect) _score.value = _score.value?.plus(1)
+
+        return isCorrect
+    }
+
+    fun next() {
+        val nextIndex = (_currentIndex.value!! + 1) % questions.size
+        _currentIndex.value = nextIndex
+        _answered.value = false
+        selectedAnswerIndex = null
+    }
+
+    fun restart() {
+        _currentIndex.value = 0
+        _score.value = 0
+        _answered.value = false
+        selectedAnswerIndex = null
+    }
+}
+
+
+
+
+<androidx.constraintlayout.widget.ConstraintLayout ... >
+
+    <TextView
+        android:id="@+id/question_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Question?"
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/answer_button_0"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/question_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Повтори для answer_button_1, 2, 3 с соответствующими id -->
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="0dp"
+        android:layout_height="8dp"
+        android:progress="0"
+        style="?android:attr/progressBarStyleHorizontal"
+        app:layout_constraintTop_toBottomOf="@id/answer_button_3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/score_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Score: 0/10"
+        app:layout_constraintTop_toBottomOf="@id/progress_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+fun updateButtons(answered: Boolean, correctIndex: Int, selectedIndex: Int?) {
+    val buttons = listOf(answerButton0, answerButton1, answerButton2, answerButton3)
+    buttons.forEachIndexed { index, button ->
+        button.isEnabled = !answered
+        when {
+            !answered -> button.setBackgroundColor(Color.TRANSPARENT)
+            index == correctIndex -> button.setBackgroundColor(MaterialTheme.colorScheme.primaryContainer)
+            index == selectedIndex -> button.setBackgroundColor(MaterialTheme.colorScheme.errorContainer)
+            else -> button.setBackgroundColor(Color.TRANSPARENT)
+        }
+    }
+}
+
+
+
+
+
+if (viewModel.currentIndex.value == viewModel.questions.size - 1) {
+    AlertDialog.Builder(this)
+        .setTitle("Тест завершён")
+        .setMessage("Ваш результат: ${viewModel.score.value}/${viewModel.questions.size}")
+        .setPositiveButton("Начать сначала") { _, _ ->
+            viewModel.restart()
+        }
+        .setCancelable(false)
+        .show()
+}
+
+
+
+
+git add .
+git commit -m "Lesson 3: QuizMaster app"
+git push -u origin lesson-3
