@@ -1,0 +1,46 @@
+git init
+
+git remote add origin https://github.com/ТВОЙ_ЛОГИН/ИМЯ_РЕПО.git
+
+git add .
+
+git commit -m "Первый коммит: базовая структура проекта"
+
+git branch -M main
+
+git push -u origin main
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Мой сайт</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Добро пожаловать</h1>
+  </header>
+  <main>
+    <p>Это стартовая страница моего проекта.</p>
+  </main>
+</body>
+</html>
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+header {
+  background-color: #222;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+git add .
+git commit -m "Добавлена базовая HTML/CSS разметка"
+git push
+
